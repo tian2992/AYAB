@@ -63,8 +63,7 @@ void Knitter::fsm()
 }
 
 bool Knitter::startOperation(byte startNeedle, 
-							byte stopNeedle,
-							byte startLine, 
+							byte stopNeedle, 
 							byte (*line))
 {
 	if( startNeedle >= 0 
@@ -82,8 +81,8 @@ bool Knitter::startOperation(byte startNeedle,
 			m_lineBuffer 		= line;
 
 			// Reset variables to start conditions			
-			m_currentLineNumber	= startLine-1; // -1 because counter will 
-											   // be increased before request
+			m_currentLineNumber	= 255; // because counter will 
+									   // be increased before request
 			m_lineRequested 	= false;
 			m_lastLineFlag		= false;
 			m_lastLinesCountdown= 2;
@@ -154,8 +153,17 @@ void Knitter::state_ready()
 void Knitter::state_operate()
 {
 	digitalWrite(LED_PIN_A,1);
+	static bool _firstRun     = true;
 	static byte _sOldPosition = 0;
 	static bool _workedOnLine = false;
+
+	if (true == _firstRun)
+	{
+		_firstRun = false;
+		delay(2000);
+		m_beeper.finishedLine();
+		reqLine(++m_currentLineNumber);
+	}
 
 	if( _sOldPosition != m_position ) 
 	{ // Only act if there is an actual change of position
