@@ -22,9 +22,45 @@ This file is part of AYAB.
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
+// Determine board type
+#if defined(__AVR_ATmega168__) || defined(__AVR_ATmega328P__)
+  // Regular Arduino
+  #include <Wire.h>
+#elif defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1280__)
+  // Arduino Mega
+  #include <SoftI2CMaster.h>
+#else
+    //untested board - please check your I2C ports
+#endif
+
+/*
+ * USERSETTINGS
+ */
+
+#define DBG_NOMACHINE 0  // Turn on to use DBG_BTN as EOL Trigger
+
 //#define KH910
 #define KH930
 
+// Should be calibrated to each device
+#ifdef KH910
+    #define FILTER_L_MIN 0
+    #define FILTER_L_MAX 600
+    #define FILTER_R_MIN 200
+    #define FILTER_R_MAX 1023
+#endif
+#ifdef KH930
+    #define FILTER_L_MIN 0
+    #define FILTER_L_MAX 600
+    #define FILTER_R_MIN 0
+    #define FILTER_R_MAX 600
+#endif
+
+/*
+ * END OF USERSETTINGS
+ */
+
+// DO NOT TOUCH
 #define API_VERSION 3
 
 #define SERIAL_BAUDRATE 115200
@@ -44,18 +80,7 @@ This file is part of AYAB.
 
 #define PIEZO_PIN 9
 
-// Should be calibrated to each device
-#ifdef KH910
-    #define FILTER_L_MIN 0
-    #define FILTER_L_MAX 600
-    #define FILTER_R_MIN 200
-    #define FILTER_R_MAX 1023
-#elif KH930
-    #define FILTER_L_MIN 0
-    #define FILTER_L_MAX 600
-    #define FILTER_R_MIN 0
-    #define FILTER_R_MAX 600
-#endif
+#define DBG_BTN_PIN 7   // DEBUG BUTTON
 
 // Machine constants
 #define NUM_NEEDLES    200
@@ -66,7 +91,6 @@ This file is part of AYAB.
 #define END_OF_LINE_OFFSET_L 32
 #define END_OF_LINE_OFFSET_R 12
 
-// Dont touch
 #define uint16 unsigned int
 
 typedef enum Direction{
